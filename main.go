@@ -1,122 +1,134 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
-	"strconv"
+	"testrepo/database"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	r := gin.New()
+	database.ConnectDB()
 
-	r.GET("/", listPostsHandler)
-	r.GET("/:id", postHandler)
-	r.POST("/", createPostHandler)
-	r.DELETE("/:id", deletePostHandler)
-	r.POST("/:id", editPostHandler)
+	r.GET("/list", allPostsHandler) //GET ALL LIST
+	// r.GET("/list/:num", listPostsHandler) //GET LIST
+
+	// r.GET("/post/:id", postHandler)          //GET POST
+	// r.POST("/post/", createPostHandler)      //CREATE POST
+	// r.DELETE("/post/:id", deletePostHandler) //DELETE POST
+	// r.POST("/post:id", editPostHandler)      //EDIT POST
+
+	// r.GET("/tag/:tag", postWithTag) //GET POST WITH TAG
 
 	r.Run()
 }
 
 type Post struct {
-	ID        int64  `json:"id"`
-	AuthorID  int64  `json:"author"`
-	Title     string `json:"title"`
-	Anons     string `json:"anons"`
-	CreatedAt string `json:"createdat"`
-	UpdatedAt string `json:"updatedat"`
-	Content   string `json:"content"`
+	ID       int64  `json:"id"`
+	Title    string `json:"title"`
+	Content  string `json:"content"`
+	AuthorID int64  `json:"author_id"`
 }
 
-var posts = []Post{
-	{
-		ID:        1,
-		Title:     "Узбекистан и Сингапур договорились о сотрудничестве по 5 направлениям",
-		AuthorID:  1,
-		Anons:     "Шавкат Мирзиёев встретился с руководством Сингапура. Достигнуты договорённости о подготовке кадров для госуправления, привлечении инвестиций, «зелёных» технологий и цифровых решений, сотрудничестве в области городского планирования и коммуникаций. Именем президента Узбекистана названа орхидея.",
-		Content:   "17 января президента Узбекистана Шавкат Мирзиёев в рамках своего государственного визита в Сингапур провёл переговоры с президентом этой страны Халимой Якуб и премьер-министром Ли Сянь Луном. Об этом сообщает пресс-служба президента Узбекистана. Официальная церемония встречи Шавката Мирзиёева прошла во дворце президента Сингапура «Истана». На площади перед дворцом выстроился почётный караул. Военный оркестр исполнил гимны двух стран. Далее состоялась церемония наименования в честь президента Узбекистана нового сорта орхидеи — цветка, являющегося национальным символом Сингапура. Такие мероприятия традиционно проводятся в знак высокого уважения и почёта к высоким гостям этой страны и выдающимся деятелям. По традиции Шавкат Мирзиёев собственноручно поместил у цветка табличку с названием нового сорта орхидеи — «Орхидея Шавката Мирзиёева». «Это прекрасный и свободно цветущий гибрид орхидей Encbi Purple и Kila Blue. Он образует полумахровые соцветия длиной около 45 см, на которых распускается от 17 до 20 цветков, каждый цветок размером около 5 см в поперечнике. Сиренево-фиолетовые лепестки и чашелистики имеют орхидейно-фиолетовое окаймление», — описывает пресс-служба президента. На переговорах президентов рассмотрены перспективы углубления отношений между Узбекистаном и Сингапуром, сотрудничества в области реформ по дальнейшей демократизации общественно-политической жизни. С удовлетворением констатировалось сотрудничество в образовательной сфере. В Ташкенте действуют Сингапурский институт развития менеджмента и Сингапурская Академия технологий, менеджмента и коммуникаций. Рассмотрен опыт двух стран в сфере регионального сотрудничества и интеграции в Центральной и Юго-Восточной Азии. Шавкат Мирзиёев пригласил Халиму Якуб посетить Узбекистан с визитом в любое удобное для неё время. Затем в резиденции «Истана» президент Узбекистана провёл переговоры с премьер-министром Сингапура Ли Сянь Луном. Подробно рассмотрены состояние и перспективы взаимодействия. Отмечена положительная динамика развития сотрудничества в приоритетных направлениях. За последние годы товарооборот увеличился вдвое. Количество действующих в Узбекистане предприятий с сингапурским капиталом выросло в 4 раза. Прямые инвестиции из этой страны в узбекскую экономику составили 700 млн долларов, говорится в сообщении. Подчёркивалось наличие больших резервов для наращивания практического взаимодействия двух стран во многих сферах. Шавкат Мирзиёев определил пять ключевых направлений сотрудничества с Сингапуром на ближайшую перспективу: Первое — развитие человеческого капитала и подготовка высококвалифицированных кадров для государственного управления. Достигнута договорённость о реализации с участием Школы государственной политики имени Ли Куан Ю совместной программы по подготовке и повышению квалификации государственных служащих в сферах управления, градостроительства, развития инфраструктуры, цифровой трансформации, инноваций, образования и здравоохранения. Кроме того, на базе Академии государственного управления Узбекистана будет запущена программа интенсивной переподготовки госслужащих с привлечением ведущих сингапурских экспертов. Второе направление заключается в привлечении сингапурской стороны в процессы приватизации в Узбекистане. В этом контексте обсуждены перспективы реализации c привлечением передового опыта, современных технологий и менеджмента ведущих сингапурских компаний новых проектов в рамках приватизации крупных предприятий Узбекистана. Предложено создать совместный Инвестиционный фонд для трансформации и реструктуризации государственных предприятий с целью дальнейшего вывода на IPO и привлечения внешних инвестиций. Третьим приоритетом обозначено привлечение передовых «зелёных» технологий и цифровых решений. Обсуждены возможности по внедрению достижений Сингапура в области цифровизации, а также применению инноваций и технологий этой страны в области «зелёного» развития. Четвёртое — совершенствование городской инфраструктуры и коммуникаций. Согласованы мероприятия по сотрудничеству в области городского планирования и строительства, озеленения, коммунального хозяйства. Первым шагом в этом направлении стала договорённость о создании в Узбекистане совместного Центра проектирования и инжиниринга по реализации инфраструктурных и отраслевых проектов. В рамках пятого направления сотрудничества отмечена важность поддержки инвестиций и расширения взаимной торговли путём продвижения с ведущими сингапурскими компаниями совместных проектов. Достигнута договорённость о создании Узбекско-Сингапурской инвестиционной компании с уставным капиталом 500 млн долларов. ли сянь лун, сингапур, халима якуб, шавкат мирзиёев По итогам переговоров прошла церемония обмена двусторонними документами. В присутствии глав делегаций состоялся обмен 8 документами, предусматривающими наращивание узбекско-сингапурского сотрудничества. В частности, приняты соглашения о сотрудничестве в области образования, транспорта, здравоохранения, в сфере подготовки кадров, в том числе государственных служащих. Достигнуты также договорённости о торгово-экономической кооперации и взаимодействии между прокуратурами двух стран. Во второй половине дня президент Узбекистана посетит Школу государственной политики имени Ли Куан Ю и проведёт встречу с руководителями ведущих сингапурских компаний. Сегодня же Шавкат Мирзиёев вылетит в Ташкент. Визит планировался на три дня, но в связи с энергокризисом в Узбекистане президент решил его сократить.",
-		CreatedAt: "2023-01-17 18:45:25+05:00",
-		UpdatedAt: "2023-01-17 18:45:25+05:00",
-	},
+type User struct {
+	ID       int64  `json:"id"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+	Profile  string `json:"profile"`
 }
 
-func listPostsHandler(c *gin.Context) {
+func allPostsHandler(c *gin.Context) {
+	posts, err := database.GetAll()
+	if err != nil {
+		jsonValue, _ := json.Marshal(err)
+		c.JSON(http.StatusInternalServerError, jsonValue)
+	}
 	c.JSON(http.StatusOK, posts)
 }
 
-func postHandler(c *gin.Context) {
-	s := c.Param("id")
-	n, err := strconv.ParseInt(s, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+// func listPostsHandler(c *gin.Context) {
+// 	// s := c.Param("num")
+// 	c.JSON(http.StatusOK, Post{})
+// }
 
-	for i, a := range posts {
-		if a.ID == n {
-			c.JSON(http.StatusOK, posts[i])
-			return
-		}
-	}
+// func postHandler(c *gin.Context) {
+// 	s := c.Param("id")
+// 	n, err := strconv.ParseInt(s, 10, 64)
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	c.Status(http.StatusNotFound)
-}
+// 	for i, a := range posts {
+// 		if a.ID == n {
+// 			c.JSON(http.StatusOK, posts[i])
+// 			return
+// 		}
+// 	}
 
-func createPostHandler(c *gin.Context) {
-	newpostID := len(posts) + 1
+// 	c.Status(http.StatusNotFound)
+// }
 
-	var newpost Post
-	if err := c.BindJSON(&newpost); err != nil {
-		c.Status(http.StatusBadRequest)
-		return
-	}
-	newpost.ID = int64(newpostID)
+// func createPostHandler(c *gin.Context) {
+// 	newpostID := len(posts) + 1
 
-	posts = append(posts, newpost)
-	c.JSON(http.StatusOK, newpostID)
-}
+// 	var newpost Post
+// 	if err := c.BindJSON(&newpost); err != nil {
+// 		c.Status(http.StatusBadRequest)
+// 		return
+// 	}
+// 	newpost.ID = int64(newpostID)
 
-func deletePostHandler(c *gin.Context) {
-	s := c.Param("id")
-	n, err := strconv.ParseInt(s, 10, 64)
-	if err != nil {
-		panic(err)
-	}
+// 	posts = append(posts, newpost)
+// 	c.JSON(http.StatusOK, newpostID)
+// }
 
-	for i, a := range posts {
-		if a.ID == n {
-			posts = append(posts[:i], posts[i+1:]...)
-		}
-	}
-	c.Status(http.StatusNoContent)
-}
+// func deletePostHandler(c *gin.Context) {
+// 	s := c.Param("id")
+// 	n, err := strconv.ParseInt(s, 10, 64)
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-func editPostHandler(c *gin.Context) {
+// 	for i, a := range posts {
+// 		if a.ID == n {
+// 			posts = append(posts[:i], posts[i+1:]...)
+// 		}
+// 	}
+// 	c.Status(http.StatusNoContent)
+// }
 
-	s := c.Param("id")
-	n, err := strconv.ParseInt(s, 10, 64)
-	if err != nil {
-		panic(err)
-	}
+// func editPostHandler(c *gin.Context) {
 
-	for i, a := range posts {
-		if a.ID == n {
+// 	s := c.Param("id")
+// 	n, err := strconv.ParseInt(s, 10, 64)
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-			var post Post
-			if err := c.ShouldBindJSON(&post); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": err.Error(),
-				})
-				panic(err)
-			}
+// 	for i, a := range posts {
+// 		if a.ID == n {
 
-			posts = append(posts[:i], posts[i+1:]...)
-			posts = append(posts, post)
-			c.Status(http.StatusOK)
-			return
-		}
-	}
+// 			var post Post
+// 			if err := c.ShouldBindJSON(&post); err != nil {
+// 				c.JSON(http.StatusBadRequest, gin.H{
+// 					"error": err.Error(),
+// 				})
+// 				panic(err)
+// 			}
 
-	c.Status(http.StatusBadRequest)
-}
+// 			posts = append(posts[:i], posts[i+1:]...)
+// 			posts = append(posts, post)
+// 			c.Status(http.StatusOK)
+// 			return
+// 		}
+// 	}
+
+// 	c.Status(http.StatusBadRequest)
+// }
+
+// func postWithTag(c *gin.Context) {
+// }
