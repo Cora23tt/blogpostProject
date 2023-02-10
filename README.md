@@ -1,7 +1,7 @@
-Blogpost CRUD REST APIs using Golang+Gin 
+Blogpost REST API using Golang+Gin, Postgres+sqlx 
 ------
 
-Unit test APIs
+Unit test API
 ![Testing results image](https://github.com/cora23tt/blogpostProject/blob/main/assets/image.png?raw=true)
 
 DB architecture
