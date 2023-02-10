@@ -2,9 +2,9 @@ package main
 
 // planning				DONE
 // Development			DONE
-// UnitTesting			PROGRESS
-// DocumentationSwaggo
-// Make Public in Git
+// UnitTesting			DONE
+// DocumentationSwaggo	PROGRESS
+// Make Public in Git	PROGRESS
 
 import (
 	"encoding/json"
@@ -25,13 +25,13 @@ func main() {
 	r.GET("/list/:num", listPostsHandler) //GET LIST
 
 	r.GET("/post/:id", postHandler)          //GET POST
-	r.POST("/post/", createPostHandler)      //CREATE POST
+	r.POST("/post", createPostHandler)       //CREATE POST
 	r.DELETE("/post/:id", deletePostHandler) //DELETE POST
 	r.POST("/post/:id", editPostHandler)     //EDIT POST
 
-	r.POST("/bytag", postByTag) //POST POST BY TAG
+	r.POST("/bytag", getPostByTag) //POST POST BY TAG
 
-	r.Run(":8080")
+	r.Run(":9000")
 }
 
 type User struct {
@@ -131,7 +131,7 @@ func editPostHandler(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-func postByTag(c *gin.Context) {
+func getPostByTag(c *gin.Context) {
 	var tagObj database.TagObj
 	if err := c.BindJSON(&tagObj); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})

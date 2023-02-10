@@ -10,10 +10,10 @@ import (
 )
 
 type Post struct {
-	ID       int64  `json:"id"`
+	ID       int64  `json:"id,string"`
 	Title    string `json:"title"`
 	Content  string `json:"content"`
-	AuthorID int64  `json:"author_id"`
+	AuthorID int64  `json:"author_id,string"`
 }
 
 type TagObj struct {
@@ -78,13 +78,13 @@ func GetPost(id int64) (Post, error) {
 	return post, nil
 }
 
-func AddPost(newpost Post) (int, error) {
-	var id int
+// returns created post ID
+func AddPost(newpost Post) (ID int, err error) {
 	query := fmt.Sprintf(`INSERT INTO tbl_post (title, content, author_id) VALUES ('%v', '%v', %d) RETURNING id`, newpost.Title, newpost.Content, newpost.AuthorID)
-	if err := Postgres.DB.QueryRow(query).Scan(&id); err != nil {
+	if err := Postgres.DB.QueryRow(query).Scan(&ID); err != nil {
 		return 0, err
 	}
-	return id, nil
+	return ID, nil
 }
 
 func DeletePost(id int) error {
