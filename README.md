@@ -7,5 +7,8 @@
 ## Unit test API
 ![Testing results image](https://github.com/cora23tt/blogpostProject/blob/main/assets/image1.png?raw=true)
 
+## Swagger API documentation
+![Swagger index page screenshot](https://github.com/cora23tt/blogpostProject/blob/main/assets/APIDoc.png?raw=true)
+
 ## DB architecturee
 ![Database architecture image](https://github.com/cora23tt/blogpostProject/blob/main/assets/image2.jpg?raw=true)
