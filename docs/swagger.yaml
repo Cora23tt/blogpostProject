@@ -1,0 +1,231 @@
+definitions:
+  database.Post:
+    properties:
+      author_id:
+        example: "0"
+        type: string
+      content:
+        type: string
+      id:
+        example: "0"
+        type: string
+      title:
+        type: string
+    type: object
+  database.TagObj:
+    properties:
+      tag:
+        type: string
+    type: object
+  main.ErrorMessage:
+    properties:
+      error:
+        type: string
+    type: object
+info:
+  contact:
+    email: aziz.rustamov.mail@gmail.com
+  description: This is a sample demo-project
+  license:
+    name: Apache 2.0
+  title: BlogPost API Documentation
+  version: "1.0"
+paths:
+  /bytag:
+    post:
+      consumes:
+      - application/json
+      description: Get list by tag
+      parameters:
+      - description: The tag of post
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/database.TagObj'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.Post'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.ErrorMessage'
+      summary: Recives the list of posts by tag
+      tags:
+      - Post
+  /list:
+    get:
+      consumes:
+      - application/json
+      description: get all posts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.Post'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorMessage'
+      summary: Recive a list of all posts
+      tags:
+      - Post
+  /list/{num}:
+    get:
+      consumes:
+      - application/json
+      description: get list by limit {num}
+      parameters:
+      - description: limit number of posts
+        in: path
+        name: num
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.Post'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.ErrorMessage'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/main.ErrorMessage'
+      summary: Recive a list of posts
+      tags:
+      - Post
+  /post:
+    post:
+      consumes:
+      - application/json
+      description: Create new post
+      parameters:
+      - description: The post to be created
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/database.Post'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: the final ID of the post
+          schema:
+            type: number
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.ErrorMessage'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/main.ErrorMessage'
+      summary: Creates a post
+      tags:
+      - Post
+  /post/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete post by ID
+      parameters:
+      - description: limit number of posts
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/main.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorMessage'
+      summary: Deletes the post from DB
+      tags:
+      - Post
+    get:
+      consumes:
+      - application/json
+      description: get post by ID {id}
+      parameters:
+      - description: id number of post
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Post'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.ErrorMessage'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/main.ErrorMessage'
+      summary: Recive post by ID
+      tags:
+      - Post
+    post:
+      consumes:
+      - application/json
+      description: Edit post by ID
+      parameters:
+      - description: New post
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/database.Post'
+      - description: Specify the ID of the old post
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorMessage'
+      summary: Edits the post from DB by ID
+      tags:
+      - Post
+swagger: "2.0"
